@@ -1,17 +1,21 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { Formik } from 'formik';
 import { Report } from 'notiflix/build/notiflix-report-aio';
-import { getContactsValue } from 'features/contactsSlice';
-import { addContacts } from 'features/contactsSlice';
+
+import { addContact } from '../../redux/operationsApi';
+
+import { selectContacts } from 'redux/selector';
+
 import { Input, Forms, Button, IoPerson } from './ContactForm.styled';
 
 const initialValues = {
   name: '',
-  number: '',
+  phone: '',
 };
 
 const ContactForm = () => {
-  const contacts = useSelector(getContactsValue);
+  const contacts = useSelector(selectContacts);
+
   const dispatch = useDispatch();
 
   const nameCheck = name => {
@@ -23,15 +27,11 @@ const ContactForm = () => {
     const check = nameCheck(values.name);
 
     if (check.length <= 0) {
-      dispatch(addContacts(values));
+      dispatch(addContact(values));
       return;
     }
 
-    Report.failure(
-      'Warning!',
-      `"${values.name}" is already in contacts`,
-      'Okay'
-    );
+    Report.info('Warning!', `"${values.name}" is already in contacts`, 'Okay');
   };
 
   return (
@@ -51,7 +51,7 @@ const ContactForm = () => {
           Number
           <Input
             type="tel"
-            name="number"
+            name="phone"
             pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
             title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
             required
